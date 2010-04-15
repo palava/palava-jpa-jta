@@ -93,7 +93,9 @@ final class UserEntityTransaction implements EntityTransaction {
     @Override
     public boolean isActive() {
         try {
-            return tx.getStatus() == Status.STATUS_ACTIVE;
+            return tx.getStatus() != Status.STATUS_NO_TRANSACTION && 
+                tx.getStatus() != Status.STATUS_UNKNOWN &&
+                tx.getStatus() != Status.STATUS_ROLLEDBACK;
         } catch (SystemException e) {
             throw new PersistenceException(e);
         }
