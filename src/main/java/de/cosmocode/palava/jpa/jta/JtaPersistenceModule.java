@@ -34,6 +34,7 @@ import de.cosmocode.palava.scope.UnitOfWork;
  */
 public final class JtaPersistenceModule implements Module {
 
+    // TODO should be destroyable
     @Override
     public void configure(Binder binder) {
         binder.bind(EntityManager.class).to(JtaAwareEntityManager.class).in(UnitOfWork.class);
