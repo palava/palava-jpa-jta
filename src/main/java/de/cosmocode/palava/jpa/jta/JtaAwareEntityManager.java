@@ -30,6 +30,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 import de.cosmocode.palava.jpa.ForwardingEntityManager;
+import de.cosmocode.palava.scope.Destroyable;
 
 /**
  * An {@link EntityManager} which uses a {@link UserTransaction} for transaction
@@ -39,7 +40,7 @@ import de.cosmocode.palava.jpa.ForwardingEntityManager;
  *
  * @author Willi Schoenborn
  */
-final class JtaAwareEntityManager extends ForwardingEntityManager {
+final class JtaAwareEntityManager extends ForwardingEntityManager implements Destroyable {
 
     private final EntityManager manager;
     private final Provider<UserTransaction> provider;
@@ -57,13 +58,17 @@ final class JtaAwareEntityManager extends ForwardingEntityManager {
     
     @Override
     public EntityTransaction getTransaction() {
-        final UserTransaction utx = provider.get();
-        return new UserEntityTransaction(utx); 
+        return new UserEntityTransaction(provider.get()); 
     }
     
     @Override
     public void joinTransaction() {
         
+    }
+    
+    @Override
+    public void destroy() {
+        if (isOpen()) close();
     }
     
 }
