@@ -16,20 +16,14 @@
 
 package de.cosmocode.palava.jpa.jta;
 
+import com.google.common.base.Preconditions;
+import com.google.inject.Inject;
+import de.cosmocode.patterns.Adapter;
+
 import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceException;
 import javax.persistence.RollbackException;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.Status;
-import javax.transaction.SystemException;
-import javax.transaction.UserTransaction;
-
-import com.google.common.base.Preconditions;
-import com.google.inject.Inject;
-
-import de.cosmocode.patterns.Adapter;
+import javax.transaction.*;
 
 /**
  * An {@link Adapter} from {@link UserTransaction} to {@link EntityTransaction}.
@@ -80,7 +74,11 @@ final class UserEntityTransaction implements EntityTransaction {
     public boolean getRollbackOnly() {
         Preconditions.checkState(isActive(), "Transaction is not active");
         try {
-            return tx.getStatus() == Status.STATUS_MARKED_ROLLBACK;
+            // same check as in org.hibernate.util.JTAHelper#isRollback
+            int status = tx.getStatus();
+            return status==Status.STATUS_MARKED_ROLLBACK ||
+		       status==Status.STATUS_ROLLING_BACK ||
+		       status==Status.STATUS_ROLLEDBACK;
         } catch (SystemException e) {
             throw new IllegalStateException(e);
         }
@@ -89,9 +87,10 @@ final class UserEntityTransaction implements EntityTransaction {
     @Override
     public boolean isActive() {
         try {
-            return tx.getStatus() != Status.STATUS_NO_TRANSACTION && 
-                tx.getStatus() != Status.STATUS_UNKNOWN &&
-                tx.getStatus() != Status.STATUS_ROLLEDBACK;
+            // same check as in org.hibernate.util.JTAHelper#isInProgress
+            int status = tx.getStatus();
+            return status == Status.STATUS_ACTIVE ||
+                    status == Status.STATUS_MARKED_ROLLBACK;
         } catch (SystemException e) {
             throw new PersistenceException(e);
         }
