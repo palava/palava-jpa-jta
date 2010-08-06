@@ -16,9 +16,8 @@
 
 package de.cosmocode.palava.jpa.jta;
 
-import de.cosmocode.palava.jta.AbstractUserTransactionAspect;
-
 import de.cosmocode.palava.jpa.Transactional;
+import de.cosmocode.palava.jta.AbstractUserTransactionAspect;
 
 public aspect UserTransactionAspect extends AbstractUserTransactionAspect {
 
