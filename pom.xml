@@ -8,9 +8,9 @@
 	<groupId>de.cosmocode.palava</groupId>
 	<artifactId>palava-jpa-jta</artifactId>
 	<name>Palava JPA JTA</name>
-	<version>1.0.2</version>
+	<version>1.1-SNAPSHOT</version>
 	<scm>
-		<developerConnection>scm:svn:https://palava.svn.cosmocode.de/palava-jpa-jta/tags/1.0.2</developerConnection>
+		<developerConnection>scm:svn:https://palava.svn.cosmocode.de/palava-jpa-jta/trunk</developerConnection>
 	</scm>
 	<repositories>
 		<repository>
